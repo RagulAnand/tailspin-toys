@@ -27,6 +27,9 @@ export default [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
+      // Keep TypeScript formatting consistent without requiring a separate formatter.
+      semi: ["error", "always"],
+      "comma-dangle": ["error", "always-multiline"],
     },
   },
 

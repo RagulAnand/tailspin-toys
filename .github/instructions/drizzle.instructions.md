@@ -45,12 +45,16 @@ import { asc, count, eq } from 'drizzle-orm';
 import type { Database } from './db';
 import { games } from '../../db/schema';
 
+/** Returns all game IDs in the stable order used by static routes. */
 export async function getAllGameIds(db: Database): Promise<number[]> {
   const rows = await db.select({ id: games.id }).from(games).orderBy(asc(games.title));
   return rows.map((r) => r.id);
 }
 ```
 
+- Add a TSDoc/JSDoc comment to every exported function in `db/**/*.ts` and `src/lib/*.ts`.
+- Describe the function's purpose, every parameter with `@param`, and the return value with `@returns`. For data-access helpers, explicitly document the injectable `db` parameter and the empty/not-found behavior when relevant.
+- Keep comments about intent and constraints rather than narrating SQL or restating the implementation. Update or remove comments when the related behavior changes.
 - Always `order by` a stable column (title) so static builds are deterministic.
 - Map raw rows to the app-facing `Game`/`Publisher`/`Category` types in one place; don't leak Drizzle row shapes into components.
 - Keep ordering/lookup logic in `games.ts`, not in pages.
@@ -70,3 +74,9 @@ Node.js 22.13 or later is required because the data layer uses the built-in `nod
 ## Type checking
 
 The data layer (`db/**/*.ts`, `src/lib/*.ts`) is type-checked by `npm run typecheck`, which runs the native **TypeScript 7** compiler (`tsgo`, from `@typescript/native-preview`) against `tsconfig.tsgo.json`. Keep helpers exported with explicit parameter and return types so `tsgo` can verify them. Linting is unaffected — ESLint + `typescript-eslint` still run on the classic `typescript` package.
+
+## TypeScript Formatting
+
+- Preserve the surrounding file's quote style, and use semicolons and trailing commas in multiline literals and parameter lists.
+- Keep exported function parameters and return types explicit, especially for data-layer code.
+- ESLint enforces the repository's semicolon and comma-dangle conventions. Run `npm run lint` before submitting changes.
